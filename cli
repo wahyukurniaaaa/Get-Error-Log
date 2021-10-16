@@ -1,0 +1,40 @@
+<?php
+
+if (strpos(PHP_SAPI, 'cgi') === 0)
+{
+	die("The cli tool is not supported when running php-cgi. It needs php-cli to function!\n\n");
+}
+
+
+// echo getcwd();
+// echo __DIR__;
+
+// print_r($argv);
+
+if($argv[1]=='-h'){
+    echo "Command Line Tool - Get Error Log - Time: ".date("Y-m-d H:i:s")."\n";
+    echo "Example : "."\n";
+    echo ""."\n";
+    echo "-h : show example and list command"."\n";
+}else{
+
+    $isi_log =file_get_contents($argv[1]);
+    if (array_search("-o",$argv)){
+
+        
+
+    }else{
+
+        $filename="log_error_".time();
+    
+    }
+    #echo"$filename";
+    $fp=fopen($filename, "ab+");
+    if($fp){
+        fputs($fp, stripslashes("$message"));
+        fclose($fp);
+    }
+    return basename($filename);
+
+
+}
