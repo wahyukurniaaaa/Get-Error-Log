@@ -5,36 +5,41 @@ if (strpos(PHP_SAPI, 'cgi') === 0)
 	die("The cli tool is not supported when running php-cgi. It needs php-cli to function!\n\n");
 }
 
-
-// echo getcwd();
-// echo __DIR__;
-
-// print_r($argv);
-
 if($argv[1]=='-h'){
     echo "Command Line Tool - Get Error Log - Time: ".date("Y-m-d H:i:s")."\n";
-    echo "Example : "."\n";
-    echo ""."\n";
+    echo "Basic : "."\n";
     echo "-h : show example and list command"."\n";
+    echo "-o [argument] : setting directory location"."\n";
+    echo "-t [argument] : set output type"."\n";
+    echo "Example : cli /var/log/nginx/error.log -t json -o /User/johnmayer/Desktop/nginxlog.json"."\n";
+    echo "cli /var/log/nginx/error.log -t json -o /User/johnmayer/Desktop/nginxlog.json"."\n";
 }else{
 
     $isi_log =file_get_contents($argv[1]);
     if (array_search("-o",$argv)){
-
+        $key = array_search ('-o', $argv);
+        $location = $argv[$key+1];
+        $location = getcwd()."/".$location;
         
-
-    }else{
-
-        $filename="log_error_".time();
-    
     }
-    #echo"$filename";
-    $fp=fopen($filename, "ab+");
+    if (in_array("-t",$argv) && in_array("json",$argv)){
+        $isi_log = explode(",",$isi_log);
+        $isi_log = json_encode($isi_log);
+        $filename=getcwd()."/log_error_".time().".json";
+    }elseif (in_array("-t",$argv) && in_array("text",$argv)){
+        $filename=getcwd()."/log_error_".time().".txt";
+    }elseif (in_array("-t",$argv) && (!in_array("text",$argv) || !in_array("json",$argv))){
+        die("error no parameter content");
+    }
+    else{
+        $filename=getcwd()."/log_error_".time().".txt";
+    }
+    if(empty($location))$location = $filename;
+    $fp=fopen($location, "ab+");
     if($fp){
-        fputs($fp, stripslashes("$message"));
+        fputs($fp, stripslashes("$isi_log"));
         fclose($fp);
     }
-    return basename($filename);
 
 
 }
